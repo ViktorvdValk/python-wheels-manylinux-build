@@ -14,6 +14,9 @@ BUILD_REQUIREMENTS=$2
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib
 
 cd /github/workspace/"${PACKAGE_PATH}"
+# cd ..
+# mkdir build
+# cd build
 #
 # if [ ! -z "$SYSTEM_PACKAGES" ]; then
 #     yum install -y ${SYSTEM_PACKAGES}  || { echo "Installing yum package(s) failed."; exit 1; }
@@ -36,26 +39,30 @@ for PY_VER in "${arrPY_VERSIONS[@]}"; do
 
     # Build wheels
     cd ..
-    mkdir build
-    cd build
+    mkdir "{PY_VER}"
+    cd "{PY_VER}"
     # python pip install cmake --upgrade
     cmake ../workspace/SuperBuild
     make -j4
     make -C SimpleITK-build dist
+
+    cd SimpleITK-build/Wrapping/Python/dist
+
+    # Bundle external shared libraries into the wheels
+    # find -exec does not preserve failed exit codes, so use an output file for failures
+    failed_wheels=$PWD/failed-wheels
+    rm -f "$failed_wheels"
+    find . -type f -iname "*-linux*.whl" -exec sh -c "auditwheel repair '{}' -w \$(dirname '{}') --plat '${PLAT}' || { echo 'Repairing wheels failed.'; auditwheel show '{}' >> "$failed_wheels"; }" \;
+
+    if [[ -f "$failed_wheels" ]]; then
+        echo "Repairing wheels failed:"
+        cat failed-wheels
+        exit 1
+    fi
+
+    echo "Succesfully build wheels:"
+    find . -type f -iname "*-manylinux*.whl"
+
+    cd ../../../..
     # /opt/python/"${PY_VER}"/bin/pip wheel . ${PIP_WHEEL_ARGS} || { echo "Building wheels failed."; exit 1; }
 done
-
-# Bundle external shared libraries into the wheels
-# find -exec does not preserve failed exit codes, so use an output file for failures
-failed_wheels=$PWD/failed-wheels
-rm -f "$failed_wheels"
-find . -type f -iname "*-linux*.whl" -exec sh -c "auditwheel repair '{}' -w \$(dirname '{}') --plat '${PLAT}' || { echo 'Repairing wheels failed.'; auditwheel show '{}' >> "$failed_wheels"; }" \;
-
-if [[ -f "$failed_wheels" ]]; then
-    echo "Repairing wheels failed:"
-    cat failed-wheels
-    exit 1
-fi
-
-echo "Succesfully build wheels:"
-find . -type f -iname "*-manylinux*.whl"
