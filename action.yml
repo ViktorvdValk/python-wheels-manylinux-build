@@ -19,10 +19,10 @@ inputs:
   #   description: 'command to run before build, e.g. the execution of a script to perform additional build-environment setup'
   #   required: false
   #   default: ''
-  package-path:
-    description: 'path to python package to build, relative to repository root'
-    required: false
-    default: ''
+  # package-path:
+  #   description: 'path to python package to build, relative to repository root'
+  #   required: false
+  #   default: ''
   # pip-wheel-args:
   #   description: 'extra arguments to pass to the `pip wheel` command, passed paths are relative to `package-path`'
   #   required: false
@@ -35,7 +35,7 @@ runs:
     - ${{ inputs.build-requirements }}
     # - ${{ inputs.system-packages }}
     # - ${{ inputs.pre-build-command }}
-    - ${{ inputs.package-path }}
+    # - ${{ inputs.package-path }}
     # - ${{ inputs.pip-wheel-args}}
 branding:
   icon: 'package'
