@@ -13,9 +13,7 @@ BUILD_REQUIREMENTS=$2
 # https://github.com/RalfG/python-wheels-manylinux-build/issues/26
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib
 
-ls
 cd /github/workspace/"${PACKAGE_PATH}"
-ls
 #
 # if [ ! -z "$SYSTEM_PACKAGES" ]; then
 #     yum install -y ${SYSTEM_PACKAGES}  || { echo "Installing yum package(s) failed."; exit 1; }
@@ -37,11 +35,10 @@ for PY_VER in "${arrPY_VERSIONS[@]}"; do
     fi
 
     # Build wheels
-    ls
     cd ..
-    ls
     mkdir build
     cd build
+    pip install cmake --upgrade
     cmake ../workspace/SuperBuild
     make -j4
     make -C SimpleITK-build dist
