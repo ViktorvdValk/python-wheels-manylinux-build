@@ -38,7 +38,7 @@ for PY_VER in "${arrPY_VERSIONS[@]}"; do
     cd ..
     mkdir build
     cd build
-    python pip install cmake --upgrade
+    # python pip install cmake --upgrade
     cmake ../workspace/SuperBuild
     make -j4
     make -C SimpleITK-build dist
