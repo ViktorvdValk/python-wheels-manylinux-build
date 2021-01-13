@@ -45,8 +45,8 @@ for PY_VER in "${arrPY_VERSIONS[@]}"; do
     cmake ../workspace/SuperBuild
     make -j4
     make -C SimpleITK-build dist
-    ls
-    cd github/"${PY_VER}"/SimpleITK-build/Wrapping/Python/dist
+    ls SimpleITK-build
+    cd SimpleITK-build/Wrapping/Python
 
     # Bundle external shared libraries into the wheels
     # find -exec does not preserve failed exit codes, so use an output file for failures
